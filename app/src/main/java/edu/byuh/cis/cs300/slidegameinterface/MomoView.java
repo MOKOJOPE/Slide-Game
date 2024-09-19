@@ -6,16 +6,35 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
+/**
+ * A custom View class for drawing a grid on the screen.
+ */
+
 public class MomoView extends View{
 
+    /**
+     * The paint object for the room.
+     */
     private Paint room;
 
+    //Call to draw
+    /**
+     * Constructor for the MomoView class.
+     *
+     * @param c the Context object
+     */
     public MomoView(Context c){
         super(c);
         room = new Paint();
         room.setColor(Color.BLACK);
     }
+//Draw
 
+    /**
+     * Draws the grid on the screen.
+     *
+     * @param c the Canvas object
+     */
     @Override
     public void onDraw(Canvas c){
         super.onDraw(c);
