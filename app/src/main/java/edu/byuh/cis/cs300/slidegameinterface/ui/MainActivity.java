@@ -1,12 +1,9 @@
-package edu.byuh.cis.cs300.slidegameinterface;
+package edu.byuh.cis.cs300.slidegameinterface.ui;
 
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 //Run it
 /**

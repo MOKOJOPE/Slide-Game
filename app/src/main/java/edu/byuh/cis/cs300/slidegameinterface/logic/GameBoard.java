@@ -1,4 +1,4 @@
-package edu.byuh.cis.cs300.slidegameinterface;
+package edu.byuh.cis.cs300.slidegameinterface.logic;
 
 public class GameBoard {
 
