@@ -1,11 +1,19 @@
 package edu.byuh.cis.cs300.slidegameinterface.logic;
-
+/**
+ * A class representing a game board for a game of Connect 5.
+ * This class provides methods for making moves, checking for wins, and drawing the game board.
+ *
+ */
 public class GameBoard {
 
     private Player[][] grid;
     private final int DIM = 5;
     private Player whoseTurnIsIt;
-
+    /**
+     * Constructs a new GameBoard object.
+     *
+     * Initializes the game board with a 5x5 grid of blank cells and sets the current player to X.
+     */
     public GameBoard() {
         //Create a 5x5 gameboard of BLANK cells
         grid = new Player[DIM][DIM];
@@ -18,7 +26,12 @@ public class GameBoard {
         //Arbitrarily, we make X the first player.
         whoseTurnIsIt = Player.X;
     }
-
+    /**
+     * Submits a move to the game board.
+     *
+     * @param move the move to submit, either a letter (A-E) for a horizontal move or a number (1-5) for a vertical move
+     * @param p the player making the move
+     */
     public void submitMove(char move, Player p) {
         if (move >= '1' && move <= '5') {
             //vertical move, move tokens down
@@ -58,7 +71,11 @@ public class GameBoard {
             whoseTurnIsIt = Player.X;
         }
     }
-
+    /**
+     * Checks the game board for a win.
+     *
+     * @return the player who won, or Player.BLANK if no one has won
+     */
     public Player checkForWin() {
         Player winner = Player.BLANK;
         boolean xWins = false;
