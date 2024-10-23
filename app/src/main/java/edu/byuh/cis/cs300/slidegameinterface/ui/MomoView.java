@@ -166,7 +166,7 @@ public class MomoView extends View {
                     if (isPlayerXTurn) { // Check if it's Player X's turn
                         tokenList = 'X'; // Assign 'X' if true
                         GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left+15, bound.top + tokenSize+15); // Set the position where the button was pressed
+                        token.setLocation(bound.left+15, bound.top + tokenSize+20); // Set the position where the button was pressed
                         token.setVelocity(0, tokenSize);
                         token.stop();
                         tokens.add(token); // Add the token to the list
@@ -176,7 +176,7 @@ public class MomoView extends View {
                     } else { // It's Player O's turn
                         tokenList = 'O'; // Assign 'O' if false
                         GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left+15, bound.top +tokenSize+15); // Set the position where the button was pressed
+                        token.setLocation(bound.left+15, bound.top +tokenSize+20); // Set the position where the button was pressed
                         token.setVelocity(0, tokenSize);
                         token.stop();
                         tokens.add(token); // Add the token to the list
@@ -198,7 +198,7 @@ public class MomoView extends View {
                     if (isPlayerXTurn) { // Check if it's Player X's turn
                         tokenList = 'X'; // Assign 'X' if true
                         GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left + tokenSize+15, bound.top+15); // Set the position where the button was pressed
+                        token.setLocation(bound.left + tokenSize+20, bound.top+20); // Set the position where the button was pressed
                         token.setVelocity(tokenSize, 0);
                         token.stop();
                         tokens.add(token); // Add the token to the list
@@ -208,7 +208,7 @@ public class MomoView extends View {
                     } else { // It's Player O's turn
                         tokenList = 'O'; // Assign 'O' if false
                         GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left + tokenSize+15, bound.top+15); // Set the position where the button was pressed
+                        token.setLocation(bound.left + tokenSize+20, bound.top+20); // Set the position where the button was pressed
                         token.setVelocity(tokenSize, 0);
                         token.stop();
                         tokens.add(token); // Add the token to the list
