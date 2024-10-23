@@ -15,7 +15,7 @@ import edu.byuh.cis.cs300.slidegameinterface.logic.Player;
  * Represents a graphical token in the sliding game interface.
  * The token is associated with a player (X or O) and can be drawn on the canvas.
  */
-public class GuiToken {
+public class GuiToken implements TickListener{
     private Bitmap img;// library to show the image
     private RectF bounds; //making the bounds of Rectangle with 4 values
     private Player player;
@@ -106,4 +106,8 @@ public class GuiToken {
         return player;
     }
 
+    @Override
+    public void onTick() {
+        move();
+    }
 }

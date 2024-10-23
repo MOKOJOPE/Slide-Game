@@ -21,7 +21,7 @@ import edu.byuh.cis.cs300.slidegameinterface.logic.Player;
  * The buttons respond to touch events and toggle between normal and pressed states.
  */
 
-public class MomoView extends View {
+public class MomoView extends View implements TickListener{
 
     private Paint room;
     private boolean initialized;
@@ -242,4 +242,8 @@ public class MomoView extends View {
             return true;
     }
 
+    @Override
+    public void onTick() {
+        invalidate();
+    }
 }
