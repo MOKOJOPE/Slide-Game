@@ -3,15 +3,19 @@ package edu.byuh.cis.cs300.slidegameinterface.ui;
 import android.os.Handler;
 import android.os.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Timer class to manage the timing of token movements in the sliding game interface.
  */
-public class Timer extends Handler {
+public class Timer extends Handler implements TickListener{
 
     private static final int MESSAGE_WHAT = 1000;
 
     private List<GuiToken> tokens;
+
+    private List<TickListener> subscribers = new ArrayList<>();
+
 
     /**
      * Constructor that initializes the Timer with a list of GuiTokens.
@@ -35,9 +39,13 @@ public class Timer extends Handler {
     public void handleMessage(Message msg) {
         // Call move on each token
         for (GuiToken token : tokens) {
-            token.move();
-//            token.stop();
-            break;
+            for (TickListener subscriber: subscribers){
+                token.move();
+                subscriber.onTick();
+//              token.stop();
+                break;
+            }
+
         }
         sendMessageDelayed(obtainMessage(), 1000); // Reschedule for the next update
     }
@@ -51,5 +59,27 @@ public class Timer extends Handler {
     // Method to stop the timer
     public void stop() {
         removeMessages(MESSAGE_WHAT); // Stop the timer by removing all pending messages
+    }
+
+
+    public void subscribe(TickListener o) {
+        subscribers.add(o);
+    }
+
+
+    public void unsubscribe(TickListener o) {
+        subscribers.remove(o);
+    }
+
+
+    public void notifyObservers() {
+        for (TickListener o :subscribers){
+            o.onTick();
+        }
+    }
+
+    @Override
+    public void onTick() {
+
     }
 }
