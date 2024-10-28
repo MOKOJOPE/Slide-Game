@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Message;
 import android.util.Log;
@@ -21,7 +22,7 @@ import edu.byuh.cis.cs300.slidegameinterface.logic.Player;
  * The buttons respond to touch events and toggle between normal and pressed states.
  */
 
-public class MomoView extends View implements TickListener{
+public class MomoView extends View implements TickListener {
 
     private Paint room;
     private boolean initialized;
@@ -31,9 +32,13 @@ public class MomoView extends View implements TickListener{
     private GridButton[] xbuttons = new GridButton[5];
     private GridButton[] ybuttons = new GridButton[5];
     private ArrayList<GuiToken> tokens;
+    private ArrayList<GuiToken> neighbors;
     private boolean isPlayerXTurn = true;
     private char tokenList;
-    private Timer tokenTimer;
+    private Timer tim;
+
+
+
     char[] num = {'1', '2', '3', '4', '5'};
     char[] letter = {'A', 'B', 'C', 'D', 'E'};
 
@@ -50,8 +55,9 @@ public class MomoView extends View implements TickListener{
         room = new Paint();
         room.setColor(Color.BLACK);
         tokens = new ArrayList<>();
-        tokenTimer = new Timer(tokens);
-
+        tim = new Timer();
+        neighbors = new ArrayList<>();
+        tim.subscribe(this);
     }
 //Draw
 
@@ -71,18 +77,21 @@ public class MomoView extends View implements TickListener{
         float b = h * 0.309f;
 
 
-
         //Setting the location to draw the button
         if (!initialized) {
             for (int t = 0; t < 5; t++) {
-                xbuttons[t] = new GridButton(getResources(), gridSize, num, a, b, gridSize/5);
-                a += gridSize/5;
+//                tim = new Timer();
+                xbuttons[t] = new GridButton(getResources(), gridSize, num[t], a, b, gridSize / 5);
+                a += gridSize / 5;
+//                tim.subscribe(this);
             }
             a = w * 0.1f;
             for (int t = 0; t < 5; t++) {
-                ybuttons[t] = new GridButton(getResources(), gridSize, letter, a-28f ,b + gridSize/5, gridSize/5);
+//                tim = new Timer();
+                ybuttons[t] = new GridButton(getResources(), gridSize, letter[t], a - 28f, b + gridSize / 5, gridSize / 5);
 //                ybuttons[t].setLocation(a - 28f, b + gridSize / 5);
                 b += gridSize / 5;
+//                tim.subscribe(this);
             }
             initialized = true;
         }
@@ -140,6 +149,11 @@ public class MomoView extends View implements TickListener{
      */
     @Override
     public boolean onTouchEvent(MotionEvent m) {
+        if(GuiToken.isAnyTokenMoving()){
+            return true;
+        }
+//        GuiToken.startMoving();
+
         float w = getWidth();
         float h = getHeight();
         lastX = m.getX();
@@ -151,6 +165,7 @@ public class MomoView extends View implements TickListener{
 //        int[] xTokenCount = new int[xbuttons.length]; // Track number of tokens in each X column
 //        int[] yTokenCount = new int[ybuttons.length]; // Track number of tokens in each Y row
 
+        neighbors.clear();
 
         if (m.getAction() == MotionEvent.ACTION_DOWN) {
             for (int i = 0; i < xbuttons.length; i++) {
@@ -165,23 +180,72 @@ public class MomoView extends View implements TickListener{
 
                     if (isPlayerXTurn) { // Check if it's Player X's turn
                         tokenList = 'X'; // Assign 'X' if true
-                        GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left+15, bound.top + tokenSize+20); // Set the position where the button was pressed
+                        GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize, button);
+                        token.setLocation(bound.left + 15, bound.top + tokenSize + 20); // Set the position where the button was pressed
                         token.setVelocity(0, tokenSize);
-                        token.stop();
+//                        token.stop();
                         tokens.add(token); // Add the token to the list
+                        tim.subscribe(token);
                         // Switch the turn
                         isPlayerXTurn = false;
 
+                        neighbors.add(token);
+
+                        char col = button.getLabel();
+
+                        for (char row = 'A'; row <= 'E'; row++){
+                            GuiToken existingToken = findToken(row,col);
+                            if(existingToken != null){
+                                neighbors.add(existingToken);
+
+                            }else{
+                                break;
+                            }
+                        }
+
+
+                        for (GuiToken neighbor : neighbors){
+                            GuiToken.startMoving();
+                            neighbor.setVelocity(0,tokenSize);
+                            neighbor.getGridPosition().row++;
+                            token.stop();
+
+                        }
+
+
+
                     } else { // It's Player O's turn
                         tokenList = 'O'; // Assign 'O' if false
-                        GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left+15, bound.top +tokenSize+20); // Set the position where the button was pressed
+                        GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize, button);
+                        token.setLocation(bound.left + 15, bound.top + tokenSize + 20); // Set the position where the button was pressed
                         token.setVelocity(0, tokenSize);
-                        token.stop();
+//                        token.stop();
                         tokens.add(token); // Add the token to the list
+                        tim.subscribe(token);
+                        Log.d("Ticks", "Add the token in the list");
                         // Switch the turn
                         isPlayerXTurn = true;
+
+                        neighbors.add(token);
+
+                        char col = button.getLabel();
+
+                        for (char row = 'A'; row <= 'E'; row++){
+                            GuiToken existingToken = findToken(row,col);
+                            if(existingToken != null){
+                                neighbors.add(existingToken);
+                            }else{
+                                break;
+                            }
+                        }
+
+                        for (GuiToken neighbor : neighbors){
+                            GuiToken.startMoving();
+                            neighbor.setVelocity(0,tokenSize);
+                            neighbor.getGridPosition().row++;
+                            token.stop();
+                        }
+
                     }
                 }
             }
@@ -197,23 +261,67 @@ public class MomoView extends View implements TickListener{
 
                     if (isPlayerXTurn) { // Check if it's Player X's turn
                         tokenList = 'X'; // Assign 'X' if true
-                        GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left + tokenSize+20, bound.top+20); // Set the position where the button was pressed
+                        GuiToken token = new GuiToken(getResources(), Player.X, bound.left, bound.top, tokenSize, button);
+                        token.setLocation(bound.left + tokenSize + 20, bound.top + 20); // Set the position where the button was pressed
                         token.setVelocity(tokenSize, 0);
-                        token.stop();
+
                         tokens.add(token); // Add the token to the list
+                        tim.subscribe(token);
                         // Switch the turn
                         isPlayerXTurn = false;
 
+                        neighbors.add(token);
+
+                        char row = button.getLabel();
+
+                        for (char col = '1'; col <= '5'; col++){
+                            GuiToken existingToken = findToken(row,col);
+                            if(existingToken != null){
+                                neighbors.add(existingToken);
+                            }else{
+                                break;
+                            }
+                        }
+
+                        for (GuiToken neighbor : neighbors){
+                            GuiToken.startMoving();
+                            neighbor.setVelocity(tokenSize,0);
+                            neighbor.getGridPosition().column++;
+                            token.stop();
+                        }
+
+
                     } else { // It's Player O's turn
                         tokenList = 'O'; // Assign 'O' if false
-                        GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize);
-                        token.setLocation(bound.left + tokenSize+20, bound.top+20); // Set the position where the button was pressed
+                        GuiToken token = new GuiToken(getResources(), Player.O, bound.left, bound.top, tokenSize, button);
+                        token.setLocation(bound.left + tokenSize + 20, bound.top + 20); // Set the position where the button was pressed
                         token.setVelocity(tokenSize, 0);
-                        token.stop();
+
                         tokens.add(token); // Add the token to the list
+                        tim.subscribe(token);
                         // Switch the turn
                         isPlayerXTurn = true;
+
+                        neighbors.add(token);
+
+                        char row = button.getLabel();
+
+                        for (char col = '1'; col <= '5'; col++){
+                            GuiToken existingToken = findToken(row,col);
+                            if(existingToken != null){
+                                neighbors.add(existingToken);
+                            }else{
+                                break;
+                            }
+                        }
+
+                        for (GuiToken neighbor : neighbors){
+                            GuiToken.startMoving();
+                            neighbor.setVelocity(tokenSize,0);
+                            neighbor.getGridPosition().column++;
+                            token.stop();
+                        }
+
                     }
                 }
             }
@@ -226,24 +334,43 @@ public class MomoView extends View implements TickListener{
                 if (button.contains(lastX, lastY)) {
                     button.release();
                     Log.d("CS300", "You released the button!");
-                    }
                 }
             }
+        }
 
-            for (GridButton button : ybuttons) {
-                if (button.contains(lastX, lastY)) {
-                    button.release();
-                    Log.d("CS300", "You released the button!");
-                }
+        for (GridButton button : ybuttons) {
+            if (button.contains(lastX, lastY)) {
+                button.release();
+                Log.d("CS300", "You released the button!");
+            }
             buttonPressed = false;
-            }
+        }
 
-            invalidate();
-            return true;
+        invalidate();
+
+        return true;
     }
-
+    /**
+     * Called on each tick to update the View.
+     * Triggers a redraw of the view to reflect any changes in the tokens or buttons.
+     */
     @Override
     public void onTick() {
         invalidate();
+    }
+    /**
+     * Searches for a token at the specified grid position.
+     *
+     * @param r the row label of the token's grid position
+     * @param c the column label of the token's grid position
+     * @return the GuiToken object if found at the specified position, otherwise null
+     */
+    public GuiToken findToken(char r, char c){
+        for (GuiToken token: tokens){
+            if(token.getGridPosition().row == r && token.getGridPosition().column == c){
+                return token;
+            }
+        }
+        return null;
     }
 }

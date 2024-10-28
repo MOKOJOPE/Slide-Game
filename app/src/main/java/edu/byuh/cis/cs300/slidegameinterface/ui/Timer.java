@@ -14,17 +14,18 @@ public class Timer extends Handler implements TickListener{
 
     private List<GuiToken> tokens;
 
-    private List<TickListener> subscribers = new ArrayList<>();
+    private List<TickListener> ticks;
 
 
     /**
      * Constructor that initializes the Timer with a list of GuiTokens.
      *
-     * @param tokens a List of GuiToken objects that will be moved by the timer.
      */
     // Constructor that takes the list of tokens
-    public Timer(List<GuiToken> tokens) {
-        this.tokens = tokens;
+    public Timer() {
+//        this.tokens = tokens;
+        ticks = new ArrayList<>();
+
         sendMessageDelayed(obtainMessage(), 1000); // Start the timer
     }
     /**
@@ -37,22 +38,21 @@ public class Timer extends Handler implements TickListener{
      */
     @Override
     public void handleMessage(Message msg) {
+        //notifyObservers();
         // Call move on each token
-        for (GuiToken token : tokens) {
-            for (TickListener subscriber: subscribers){
-                token.move();
+//        for (GuiToken token : tokens) {
+            for (TickListener subscriber: ticks){
+                //token.move();
                 subscriber.onTick();
-//              token.stop();
-                break;
+//                token.stop();
             }
 
-        }
+        //}
         sendMessageDelayed(obtainMessage(), 1000); // Reschedule for the next update
     }
 
     /**
      * Stops the timer by removing all pending messages.
-     *
      * This method should be called when the timer is no longer needed
      * to prevent memory leaks and unnecessary updates.
      */
@@ -61,23 +61,37 @@ public class Timer extends Handler implements TickListener{
         removeMessages(MESSAGE_WHAT); // Stop the timer by removing all pending messages
     }
 
-
+    /**
+     * Subscribes a TickListener to the timer, enabling it to receive tick updates.
+     *
+     * @param o the TickListener to be subscribed
+     */
     public void subscribe(TickListener o) {
-        subscribers.add(o);
+        ticks.add(o);
     }
 
-
+    /**
+     * Unsubscribes a TickListener from the timer, stopping its tick updates.
+     *
+     * @param o the TickListener to be unsubscribed
+     */
     public void unsubscribe(TickListener o) {
-        subscribers.remove(o);
+        ticks.remove(o);
     }
 
-
+    /**
+     * Notifies all subscribed TickListeners by invoking their onTick method.
+     * This method is typically called within the handleMessage method to update all
+     * listeners in sync with the timer's intervals.
+     */
     public void notifyObservers() {
-        for (TickListener o :subscribers){
-            o.onTick();
+        for (TickListener listener :ticks){
+            listener.onTick();
         }
     }
-
+    /**
+     * Placeholder for the onTick method from TickListener interface.
+     */
     @Override
     public void onTick() {
 

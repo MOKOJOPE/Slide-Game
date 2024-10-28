@@ -15,7 +15,7 @@ public class GridButton {
     private Bitmap img;
     private Bitmap passedImg;
     private RectF bounds;
-    private char[] label;
+    private char label;
     private boolean isPassed;
     private float x;
     private float y;
@@ -27,7 +27,7 @@ public class GridButton {
      * @param gridSize the size of the grid that the button belongs to
      * @param label the label to display on the button
      */
-    public GridButton(Resources res, float gridSize, char [] label, float x, float y, float size){
+    public GridButton(Resources res, float gridSize, char label, float x, float y, float size){
         this.label = label;
         img = BitmapFactory.decodeResource(res, R.drawable.button);
         passedImg = BitmapFactory.decodeResource(res, R.drawable.passed);
@@ -59,14 +59,29 @@ public class GridButton {
         return bounds.contains(x,y);
     }
 
+    /**
+     * Gets the X-coordinate of the button's position.
+     *
+     * @return the X-coordinate
+     */
     public float getX() {
         return x;
     }
 
+    /**
+     * Gets the Y-coordinate of the button's position.
+     *
+     * @return the Y-coordinate
+     */
     public float getY() {
         return y;
     }
 
+    /**
+     * Retrieves the bounds of the button.
+     *
+     * @return the RectF object representing the button's bounds
+     */
     public RectF getBounds() {
         return bounds;
     }
@@ -83,6 +98,32 @@ public class GridButton {
      */
     public void release(){
         isPassed = false;
+    }
+
+    /**
+     * Retrieves the label of the button.
+     *
+     * @return the label character of the button
+     */
+    public char getLabel(){
+        return label;
+    }
+    /**
+     * Checks if the button is a top button based on its label.
+     *
+     * @return true if the label indicates a top button, false otherwise
+     */
+    public boolean isTopButton() {
+        return (label >='1' && label <='5');
+    }
+
+    /**
+     * Checks if the button is a left button based on its label.
+     *
+     * @return true if the label indicates a left button, false otherwise
+     */
+    public boolean isLeftButton(){
+        return (label >= 'A' && label <= 'E');
     }
 
     /**
